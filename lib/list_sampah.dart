@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'inputsampah.dart';
 import 'dashboard_page.dart';
 import 'edit_sampah.dart';
 
@@ -43,6 +44,17 @@ class _ListSampahPageState extends State<ListSampahPage> {
         backgroundColor: const Color.fromARGB(255, 63, 198, 202),
         title: const Text("Data Sampah"),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.add_box),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const InputSampahPage(),
+                ),
+              );
+            },
+          ),
           IconButton(icon: const Icon(Icons.refresh), onPressed: getData),
           IconButton(
             icon: const Icon(Icons.bar_chart),

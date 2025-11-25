@@ -41,35 +41,6 @@ class WelcomePage extends StatelessWidget {
 
             const SizedBox(height: 40),
 
-            // === BUTTON MULAI ===
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const InputSampahPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                "Mulai",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 92, 167, 216),
-                ),
-              ),
-            ),
             // === BUTTON masuk ke list sampah ===
             ElevatedButton(
               onPressed: () {
