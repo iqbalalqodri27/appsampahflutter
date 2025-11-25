@@ -88,33 +88,26 @@ class _InputSampahPageState extends State<InputSampahPage> {
                     const SizedBox(height: 25),
                     ElevatedButton(
                       onPressed: () async {
-                        try {
-                          var url = Uri.parse(
-                            "http://192.168.92.146/api_sampah/insert_sampah.php",
-                          );
-                          var response = await http.post(
-                            url,
-                            body: {
-                              "nis": nisController.text,
-                              "kelas": kelasController.text,
-                              "nama": namaController.text,
-                              "kategori": kategoriSampah!,
-                              "nama_sampah": namaSampahController.text,
-                            },
-                          );
+                        var url = Uri.parse(
+                          "http://192.168.92.146/api_sampah/insert_sampah.php",
+                        );
+                        var response = await http.post(
+                          url,
+                          body: {
+                            "nis": nisController.text,
+                            "kelas": kelasController.text,
+                            "nama": namaController.text,
+                            "kategori": kategoriSampah!,
+                            "nama_sampah": namaSampahController.text,
+                          },
+                        );
 
-                          // 📌 Pindah halaman
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ListSampahPage(),
-                            ),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text("Error: $e")));
-                        }
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ListSampahPage(),
+                          ),
+                        );
                       },
                       child: const Text("Simpan"),
                     ),
