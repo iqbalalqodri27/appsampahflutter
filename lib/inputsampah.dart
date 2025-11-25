@@ -32,7 +32,7 @@ class _InputSampahPageState extends State<InputSampahPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF800020),
+        backgroundColor: const Color.fromARGB(255, 63, 180, 209),
         title: const Text("Input Data Sampah"),
       ),
       body: Container(

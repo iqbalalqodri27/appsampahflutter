@@ -32,10 +32,15 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF2A3B57), // biru maroon gelap
+      backgroundColor: const Color.fromARGB(
+        255,
+        62,
+        167,
+        185,
+      ), // biru maroon gelap
       appBar: AppBar(
         title: const Text("📊 Dashboard Sampah"),
-        backgroundColor: const Color(0xFF1E2A39),
+        backgroundColor: const Color.fromARGB(255, 57, 126, 211),
       ),
       body: grafikData.isEmpty
           ? const Center(child: CircularProgressIndicator())
@@ -84,7 +89,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         BarChartRodData(
                           toY: double.parse(item['total']),
                           width: 20,
-                          color: Colors.orange,
+                          color: const Color.fromARGB(255, 72, 177, 51),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ],

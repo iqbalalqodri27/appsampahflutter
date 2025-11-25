@@ -40,7 +40,7 @@ class _ListSampahPageState extends State<ListSampahPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF800020),
+        backgroundColor: const Color.fromARGB(255, 63, 198, 202),
         title: const Text("Data Sampah"),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: getData),
