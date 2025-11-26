@@ -1,20 +1,35 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'welcome_page.dart';
+import 'firebase_options.dart';
+import 'home_page.dart';
+import 'inputsampah.dart';
+import 'list_sampah.dart';
+import 'dashboard_page.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Aplikasi Bila Sampah',
+      title: 'Bila Sampah',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Roboto'),
-      home: const WelcomePage(),
+      theme: ThemeData(
+        primaryColor: const Color(0xFF0B62FF),
+        useMaterial3: true,
+      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+        '/input': (context) => const InputSampahPage(),
+        '/list': (context) => const ListSampahPage(),
+        '/dashboard': (context) => const DashboardPage(),
+      },
     );
   }
 }

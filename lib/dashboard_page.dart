@@ -1,103 +1,104 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
-
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  List grafikData = [];
-
-  Future fetchData() async {
-    var url = Uri.parse("http://192.168.92.146/api_sampah/grafik.php");
-    var response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      grafikData = jsonDecode(response.body);
-      setState(() {});
-    }
-  }
+  Map<String, int> counts = {};
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    // realtime listener: hitung jumlah per kategori
+    FirebaseFirestore.instance.collection('sampah').snapshots().listen((snap) {
+      final Map<String, int> m = {};
+      for (var d in snap.docs) {
+        final k = (d.data()['kategori'] ?? 'Lainnya') as String;
+        m[k] = (m[k] ?? 0) + 1;
+      }
+      setState(() => counts = m);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final categories = counts.keys.toList();
+    final values = counts.values.toList();
+
     return Scaffold(
-      backgroundColor: const Color.fromARGB(
-        255,
-        62,
-        167,
-        185,
-      ), // biru maroon gelap
       appBar: AppBar(
-        title: const Text("📊 Dashboard Sampah"),
-        backgroundColor: const Color.fromARGB(255, 57, 126, 211),
+        title: const Text('Dashboard'),
+        backgroundColor: const Color(0xFF800020),
       ),
-      body: grafikData.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(20),
-              child: BarChart(
-                BarChartData(
-                  alignment: BarChartAlignment.spaceAround,
-                  maxY:
-                      grafikData
-                          .map((e) => int.parse(e['total']))
-                          .reduce((a, b) => a > b ? a : b)
-                          .toDouble() +
-                      2,
-                  barTouchData: BarTouchData(enabled: true),
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(showTitles: true),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        getTitlesWidget: (value, meta) {
-                          int i = value.toInt();
-                          if (i < grafikData.length) {
-                            return Text(
-                              grafikData[i]['kategori'],
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: counts.isEmpty
+            ? const Center(child: Text('Belum ada data'))
+            : Column(
+                children: [
+                  SizedBox(
+                    height: 300,
+                    child: BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY:
+                            (values.reduce(
+                              (a, b) => a > b ? a : b,
+                            )).toDouble() +
+                            2,
+                        barGroups: List.generate(values.length, (i) {
+                          return BarChartGroupData(
+                            x: i,
+                            barRods: [
+                              BarChartRodData(
+                                toY: values[i].toDouble(),
+                                width: 18,
                               ),
-                            );
-                          }
-                          return const Text("");
-                        },
+                            ],
+                          );
+                        }),
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                final idx = value.toInt();
+                                if (idx < 0 || idx >= categories.length) {
+                                  return const SizedBox.shrink();
+                                }
+                                return Text(
+                                  categories[idx],
+                                  style: const TextStyle(fontSize: 11),
+                                );
+                              },
+                            ),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: true),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                  borderData: FlBorderData(show: false),
-                  barGroups: grafikData.asMap().entries.map((entry) {
-                    int i = entry.key;
-                    var item = entry.value;
-                    return BarChartGroupData(
-                      x: i,
-                      barRods: [
-                        BarChartRodData(
-                          toY: double.parse(item['total']),
-                          width: 20,
-                          color: const Color.fromARGB(255, 72, 177, 51),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ],
-                    );
-                  }).toList(),
-                ),
+                  const SizedBox(height: 20),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: categories.length,
+                      itemBuilder: (c, i) => ListTile(
+                        title: Text(categories[i]),
+                        trailing: Text(values[i].toString()),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
+      ),
     );
   }
 }

@@ -1,128 +1,120 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'inputsampah.dart';
-import 'dashboard_page.dart';
 import 'edit_sampah.dart';
 
-class ListSampahPage extends StatefulWidget {
+class ListSampahPage extends StatelessWidget {
   const ListSampahPage({super.key});
 
-  @override
-  State<ListSampahPage> createState() => _ListSampahPageState();
-}
-
-class _ListSampahPageState extends State<ListSampahPage> {
-  List dataSampah = [];
-  bool loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    getData();
-  }
-
-  Future<void> getData() async {
-    var url = Uri.parse("http://192.168.92.146/api_sampah/get_sampah.php");
-    var response = await http.get(url);
-    setState(() {
-      dataSampah = json.decode(response.body);
-      loading = false;
-    });
-  }
-
-  Future<void> hapusData(String id) async {
-    var url = Uri.parse("http://192.168.92.146/api_sampah/delete_sampah.php");
-    await http.post(url, body: {"id": id});
-    getData();
+  Future<void> _confirmDelete(BuildContext context, String id) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Hapus Data'),
+        content: const Text('Yakin ingin menghapus data ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(c, false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+    if (ok ?? false) {
+      await FirebaseFirestore.instance.collection('sampah').doc(id).delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data terhapus'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 63, 198, 202),
-        title: const Text("Data Sampah"),
+        title: const Text('Data Sampah'),
+        backgroundColor: const Color(0xFF800020),
         actions: [
           IconButton(
-            icon: const Icon(Icons.add_box),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const InputSampahPage(),
-                ),
-              );
-            },
-          ),
-          IconButton(icon: const Icon(Icons.refresh), onPressed: getData),
-          IconButton(
             icon: const Icon(Icons.bar_chart),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DashboardPage()),
-              );
-            },
+            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
           ),
         ],
       ),
-      body: loading
-          ? const Center(child: CircularProgressIndicator())
-          : dataSampah.isEmpty
-          ? const Center(
-              child: Text(
-                "Belum ada data",
-                style: TextStyle(color: Colors.white, fontSize: 18),
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(10),
-              itemCount: dataSampah.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('sampah')
+            .orderBy('created_at', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError)
+            return Center(child: Text('Error: ${snapshot.error}'));
+          if (!snapshot.hasData)
+            return const Center(child: CircularProgressIndicator());
+          final docs = snapshot.data!.docs;
+          if (docs.isEmpty) return const Center(child: Text('Belum ada data'));
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: docs.length,
+            itemBuilder: (context, i) {
+              final d = docs[i];
+              final data = d.data() as Map<String, dynamic>;
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 6,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: ListTile(
+                  title: Text(data['nama'] ?? ''),
+                  subtitle: Text(
+                    'NIS: ${data['nis'] ?? ''} • Kelas: ${data['kelas'] ?? ''}\nKategori: ${data['kategori'] ?? ''}\nSampah: ${data['nama_sampah'] ?? ''}',
                   ),
-                  elevation: 5,
-                  child: ListTile(
-                    title: Text(dataSampah[index]["nama"]),
-                    subtitle: Text(
-                      "NIS : ${dataSampah[index]["nis"]}\nkelas : ${dataSampah[index]["kelas"]},\nKategori : ${dataSampah[index]["kategori"]},\nNama Sampah : ${dataSampah[index]["nama_sampah"]}",
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    EditSampahPage(data: dataSampah[index]),
-                              ),
-                            ).then((_) => getData());
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            hapusData(dataSampah[index]["id"]);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Data berhasil dihapus!"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                  leading: data['url_gambar'] != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            data['url_gambar'],
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : const Icon(Icons.image_not_supported),
+                  isThreeLine: true,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // IconButton(
+                      //   icon: const Icon(Icons.edit, color: Colors.blue),
+                      //   onPressed: () {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //         builder: (_) =>
+                      //             EditSampahPage(id: d.id, data: data),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _confirmDelete(context, d.id),
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

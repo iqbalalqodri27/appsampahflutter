@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "729739531700",
+    "project_id": "sampahflutter",
+    "storage_bucket": "sampahflutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:729739531700:android:b7599018d5add5ceda8ee1",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwEoq656JCSG-40NZCFSPph5nW9YeqseQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
