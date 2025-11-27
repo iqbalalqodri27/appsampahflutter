@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'inputsampah.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -21,14 +20,14 @@ class HomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Logo (taruh file al_azhar_logo.png di assets/images/)
-              SizedBox(
-                height: 120,
-                child: Image.asset(
-                  'assets/images/al_azhar_logo.png',
-                  fit: BoxFit.contain,
-                ),
-              ),
-              const SizedBox(height: 12),
+              // SizedBox(
+              //   height: 120,
+              //   child: Image.asset(
+              //     'assets/images/al_azhar_logo.png',
+              //     fit: BoxFit.contain,
+              //   ),
+              // ),
+              // const SizedBox(height: 12),
               const Text(
                 'AL AZHAR',
                 style: TextStyle(
@@ -42,7 +41,7 @@ class HomePage extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
-                  'Selamat datang di aplikasi bila sampah',
+                  'Catat Sampahmu',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,

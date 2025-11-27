@@ -160,7 +160,7 @@ class _PilahSampahFormState extends State<PilahSampahForm> {
             const SizedBox(height: 20),
 
             DropdownButtonFormField<String>(
-              value: jenisSampah,
+              initialValue: jenisSampah,
               decoration: const InputDecoration(labelText: "Jenis Sampah"),
               items: listJenis
                   .map(

@@ -53,10 +53,12 @@ class ListSampahPage extends StatelessWidget {
             .orderBy('created_at', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
-          if (!snapshot.hasData)
+          }
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
+          }
           final docs = snapshot.data!.docs;
           if (docs.isEmpty) return const Center(child: Text('Belum ada data'));
           return ListView.builder(
