@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -32,10 +31,6 @@ class _DashboardPageState extends State<DashboardPage> {
     final values = counts.values.toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
-        backgroundColor: const Color(0xFF800020),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: counts.isEmpty

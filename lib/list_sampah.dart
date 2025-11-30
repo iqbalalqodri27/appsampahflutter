@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'edit_sampah.dart';
 
 class ListSampahPage extends StatelessWidget {
   const ListSampahPage({super.key});
@@ -37,16 +36,6 @@ class ListSampahPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Data Sampah'),
-        backgroundColor: const Color(0xFF800020),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.bar_chart),
-            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
-          ),
-        ],
-      ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('sampah')

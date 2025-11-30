@@ -1,35 +1,134 @@
+import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
-import 'home_page.dart';
 import 'inputsampah.dart';
 import 'list_sampah.dart';
 import 'dashboard_page.dart';
+import 'login_page.dart';
+import 'register_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  runApp(MainRouter());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// =====================
+// MAIN ROUTER
+// =====================
+class MainRouter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bila Sampah',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF0B62FF),
-        useMaterial3: true,
+      title: 'Catat Sampahmu',
+      home: SplashScreenPage(),
+    );
+  }
+}
+
+// =====================
+// SPLASH SCREEN
+// =====================
+class SplashScreenPage extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreenPage> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp()),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.blue,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.recycling, color: Colors.white, size: 100),
+            SizedBox(height: 20),
+            Text(
+              "Catat Sampahmu",
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => const HomePage(),
-        '/input': (context) => const InputSampahPage(),
-        '/list': (context) => const ListSampahPage(),
-        '/dashboard': (context) => const DashboardPage(),
-      },
+    );
+  }
+}
+
+// =====================
+// MAIN PAGE SETELAH LOGIN
+// =====================
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _selectedIndex = 1;
+
+  final List<Widget> _pages = [
+    InputSampahPage(),
+    ListSampahPage(),
+    DashboardPage(),
+  ];
+
+  final List<String> _titles = ["Input Data", "List Data", "Dashboard Grafik"];
+
+  void _onItemTapped(int index) {
+    setState(() => _selectedIndex = index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_titles[_selectedIndex]),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        backgroundColor: Colors.grey[300],
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.input), label: "Input"),
+          BottomNavigationBarItem(icon: Icon(Icons.list), label: "List"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard),
+            label: "Dashboard",
+          ),
+        ],
+      ),
     );
   }
 }

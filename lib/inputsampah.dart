@@ -32,20 +32,6 @@ class _InputSampahPageState extends State<InputSampahPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Input Data Sampah'),
-        backgroundColor: const Color(0xFF800020),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: () => Navigator.pushNamed(context, '/list'),
-          ),
-          IconButton(
-            icon: const Icon(Icons.bar_chart),
-            onPressed: () => Navigator.pushNamed(context, '/dashboard'),
-          ),
-        ],
-      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -72,7 +58,7 @@ class _InputSampahPageState extends State<InputSampahPage> {
                     _buildTextField(namaController, 'Nama'),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: kategoriSampah,
+                      initialValue: kategoriSampah,
                       decoration: const InputDecoration(
                         labelText: 'Kategori Sampah',
                         border: OutlineInputBorder(),
